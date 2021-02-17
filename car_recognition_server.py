@@ -2,22 +2,16 @@
 
 from flask import Flask, request
 from flask_cors import CORS, cross_origin
-import numpy as np
-import classifier
 import traceback
 import json
 import io
-import cv2
+import car_classifier
 
 app = Flask(__name__)
 CORS(app)
 
-net = cv2.dnn_DetectionModel('yolov4/yolov4.cfg', 'yolov4/yolov4.weights')
-net.setInputSize(608, 608)
-net.setInputScale(1.0 / 255)
-net.setInputSwapRB(True)
-car_make_classifier = classifier.Classifier('model-weights-spectrico-car-brand-recognition-mobilenet_v3-224x224-170620.mnn', 'labels-makes.txt')
-car_color_classifier = classifier.Classifier('model-weights-spectrico-car-colors-recognition-mobilenet_v3-224x224-180420.mnn', 'labels-colors.txt')
+# TODO req. pars?                
+classifier = car_classifier.CarClassifier(0.5, 0.3)
 
 @app.route("/", methods = ['POST'])
 @cross_origin()
@@ -26,6 +20,7 @@ def objectDetect():
         objects = []
         try:
             import numpy as np
+            import cv2
             data = np.frombuffer(request.files['image'].read(), dtype=np.uint8)
             img = cv2.imdecode(data, cv2.IMREAD_COLOR)
             if img is None:
@@ -36,20 +31,8 @@ def objectDetect():
                 )
                 return response
 
-            classes, confidences, boxes = net.detect(img, confThreshold=0.1, nmsThreshold=0.4)
-            for classId, confidence, box in zip(classes.flatten(), confidences.flatten(), boxes):
-                if classId in [2, 5, 7]:
-                    if confidence > 0.3:
-                        left, top, width, height = box
-                        x1 = left
-                        x2 = left + width
-                        y1 = top
-                        y2 = top + height
-                        car_img = img[y1:y2, x1:x2]
-                        (make, make_confidence) = car_make_classifier.predict(car_img)
-                        (color, color_confidence) = car_color_classifier.predict(car_img)
-                        rect = {"left": str(x1), "top": str(y1), "width": str(x2-x1), "height": str(y2-y1)}
-                        objects.append({"make": make, "color": color, "make_prob": str(make_confidence), "color_prob": str(color_confidence), "obj_prob": str(confidence), "rect": rect})
+            objects = classifier.predict(img)
+
         except:
             traceback.print_exc()
             response = app.response_class(
@@ -66,6 +49,8 @@ def objectDetect():
         return response
     else:
         return "415 Unsupported Media Type"
+
+
 
 @app.route("/", methods = ['GET'])
 @cross_origin()
