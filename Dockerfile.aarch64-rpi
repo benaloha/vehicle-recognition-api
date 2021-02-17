@@ -1,0 +1,56 @@
+#https://qengineering.eu/install-ubuntu-20.04-on-raspberry-pi-4.html
+#or 
+#https://github.com/armindocachada/raspberrypi-docker-tensorflow-opencv
+# see also youtube video mentioned in readme.
+
+#of deze gast met zn dockerfile!
+#https://github.com/fgervais/docker-tensorflow/blob/master/Dockerfile
+
+# or tensorflow lite? nee, model kloppen dan niet
+
+FROM arm64v8/ubuntu:focal
+
+ENV IMG 1.jpg
+
+RUN apt-get update
+RUN DEBIAN_FRONTEND="noninteractive" apt-get upgrade -y
+RUN DEBIAN_FRONTEND="noninteractive" apt-get -y install \
+python3 python3-pip \
+gfortran libhdf5-dev libc-ares-dev libeigen3-dev \
+libatlas-base-dev libopenblas-dev libblas-dev liblapack-dev \
+wget ffmpeg libsm6 libxext6 \
+&& rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install --upgrade pip
+
+RUN pip install pybind11
+RUN pip install Cython==0.29.21
+# install h5py with Cython version 0.29.21
+RUN pip install h5py
+# upgrade setuptools -> 51.0.0
+RUN pip install --upgrade setuptools
+
+# tensorflow drama
+RUN mkdir -p /opt/car/yolo-coco
+COPY tensorflow-2.4.0-cp38-none-linux_aarch64.whl /opt/car
+WORKDIR /opt/car
+RUN pip install tensorflow-2.4.0-cp38-none-linux_aarch64.whl
+RUN rm *.whl
+
+RUN pip install opencv-python
+RUN pip install Pillow
+#Solves Runtime error: ValueError: numpy.ndarray size changed, may indicate binary incompatibility.
+#Strange tensorflow 2.4.0 requires numpy 1.19, but it works..
+RUN pip install numpy==1.20.0
+RUN pip cache purge
+
+# download models al op fs host gedownload, dan hoeft het niet steeds in docker
+# stap te gebeuren, is behoorlijk traag.
+#WORKDIR /opt/car/yolo-coco
+#RUN wget https://pjreddie.com/media/files/yolov3.weights
+
+# copy repo
+COPY . /opt/car
+WORKDIR /opt/car
+
+CMD python3 car_classifier_yolo3.py -i data/${IMG}
