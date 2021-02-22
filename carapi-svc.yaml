@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: carapi-service
+  labels:
+    run: carapi
+spec:
+  type: NodePort
+  ports:
+  - port: 6000
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    run: carapi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: carapi-deployment
+  labels:
+    app: carapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: carapi
+  template:
+    metadata:
+      labels:
+        app: carapi
+    spec:
+      containers:
+        - name: carapi
+          image: localhost:32000/carapi
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 6000
