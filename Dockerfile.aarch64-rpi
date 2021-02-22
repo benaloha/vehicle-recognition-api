@@ -10,8 +10,6 @@
 
 FROM arm64v8/ubuntu:focal
 
-ENV IMG 1.jpg
-
 RUN apt-get update
 RUN DEBIAN_FRONTEND="noninteractive" apt-get upgrade -y
 RUN DEBIAN_FRONTEND="noninteractive" apt-get -y install \
@@ -39,6 +37,7 @@ RUN rm *.whl
 
 RUN pip install opencv-python
 RUN pip install Pillow
+RUN pip install six
 #Solves Runtime error: ValueError: numpy.ndarray size changed, may indicate binary incompatibility.
 #Strange tensorflow 2.4.0 requires numpy 1.19, but it works..
 RUN pip install numpy==1.20.0
@@ -53,4 +52,4 @@ RUN pip cache purge
 COPY . /opt/car
 WORKDIR /opt/car
 
-CMD python3 car_classifier_yolo3.py -i data/${IMG}
+CMD python3 car_recognition_server.py
