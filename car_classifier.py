@@ -121,16 +121,20 @@ class CarClassifier():
 					color_result = self.color_classifier.predict(image[max(y, 0):y + h, max(x, 0):x + w])
 					model_result = self.model_classifier.predict(image[max(y, 0):y + h, max(x, 0):x + w])
 
-					color_txt = "{}: {:.4f}".format(color_result[0]['color'], float(color_result[0]['prob']))
+					color_car = color_result[0]['color']
+					color_prob = float(color_result[0]['prob'])
+					color_txt = "{}: {}".format(color_car, color_prob)					
 					cv2.putText(image, color_txt, (x + 2, y + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
 
-					make_txt = "{}: {:.4f}".format(model_result[0]['make'], float(model_result[0]['prob']))
+					make_car = model_result[0]['make']
+					make_prob = float(model_result[0]['prob'])
+					make_txt = "{}: {}".format(make_car, make_prob)										
 					cv2.putText(image, make_txt, (x + 2, y + 40), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
 
-					model_txt = model_result[0]['model']
-					cv2.putText(image, model_txt, (x + 2, y + 60), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+					model_car = model_result[0]['model']
+					cv2.putText(image, model_car, (x + 2, y + 60), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
 
-					car = {"make": make_txt, "model": model_txt, "color": color_txt}
+					car = {"make": make_car, "make_prob": make_prob, "model": model_car, "color": color_car, "color_prob": color_prob}
 					print("[Response] {}".format(car))
 					objects.append(car)
 

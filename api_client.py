@@ -1,5 +1,6 @@
 import requests
 import os
+import json
 
 path = '../../temp/2021-02-28 (copy)'
 with os.scandir(path) as entries:
@@ -27,10 +28,9 @@ with os.scandir(path) as entries:
                     else:
                         extra_fn = ''
                         for car in cars:
-                            print(car)
-                            extra_fn.join(car.json()['make'])
+                            extra_fn = extra_fn + "-{}-{}-{}".format(car['make'], car['model'], car['color'])
                         fn_parts = entry.name.split('.')
-                        newPath=path + '/cars/' + fn_parts[0] + extra_fn + fn_parts[1]
+                        newPath=path + '/cars/' + fn_parts[0] + extra_fn + '.' + fn_parts[1]
                         print("move file to: " + newPath)
                         os.rename(entry.path, newPath)
             else:
