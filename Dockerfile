@@ -1,7 +1,5 @@
 FROM python:3.8-slim-buster
 
-ENV IMG img.jpg
-
 RUN apt-get update
 RUN apt-get install -y wget ffmpeg libsm6 libxext6
 
