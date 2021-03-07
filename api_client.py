@@ -1,8 +1,9 @@
 import requests
 import os
 import json
+import time
 
-path = '../../temp/2021-02-28 (copy)'
+path = '../../temp/2021-03-06 (copy)'
 with os.scandir(path) as entries:
     print("analyse path: " + path)
 
@@ -12,12 +13,12 @@ with os.scandir(path) as entries:
         pass
 
     for entry in entries:
-        print("analyse image: " + entry.name)
+        start = time.time()
         if entry.is_file():
             if entry.name.endswith('.jpg') or entry.name.endswith('.thumb'):
                 file = open(entry, 'rb')
                 files={"image": file}
-                res=requests.post(url='http://127.0.0.1:6000',
+                res=requests.post(url='http://localhost',
                                   files=files)
 
                 if res.status_code == 200:
@@ -28,14 +29,17 @@ with os.scandir(path) as entries:
                     else:
                         extra_fn = ''
                         for car in cars:
-                            extra_fn = extra_fn + "-{}-{}-{}".format(car['make'], car['model'], car['color'])
+                            extra_fn = extra_fn + "--{}-{}-{}".format(car['make'], car['model'], car['color'])
                         fn_parts = entry.name.split('.')
                         newPath=path + '/cars/' + fn_parts[0] + extra_fn + '.' + fn_parts[1]
                         print("move file to: " + newPath)
                         os.rename(entry.path, newPath)
             else:
-                print("no picture, remove: " + entry.name)
+                print("no picture file, remove: " + entry.name)
                 os.remove(entry)
+
+        end = time.time()
+        print("[INFO] Object detection took {:.6f} seconds for file {}".format(end - start, entry.name))
 
 
 
