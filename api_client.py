@@ -3,7 +3,7 @@ import os
 import json
 import time
 
-path = '../../temp/2021-03-06 (copy)'
+path = '../../temp/2021-03-08 (copy)'
 with os.scandir(path) as entries:
     print("analyse path: " + path)
 
@@ -18,7 +18,7 @@ with os.scandir(path) as entries:
             if entry.name.endswith('.jpg') or entry.name.endswith('.thumb'):
                 file = open(entry, 'rb')
                 files={"image": file}
-                res=requests.post(url='http://localhost',
+                res=requests.post(url='http://rpi4gb',
                                   files=files)
 
                 if res.status_code == 200:
