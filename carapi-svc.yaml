@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: carapi-deployment
+  name: carapi-rpi2gb-deployment
   labels:
     app: carapi
 spec:
@@ -14,10 +14,35 @@ spec:
       labels:
         app: carapi
     spec:
+      nodeName: rpi2gb
       containers:
         - name: carapi
           image: localhost:32000/carapi
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 6000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: carapi-rpi4gb-deployment
+  labels:
+    app: carapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: carapi
+  template:
+    metadata:
+      labels:
+        app: carapi
+    spec:
+      nodeName: rpi4gb
+      containers:
+        - name: carapi
+          image: localhost:32000/carapi
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 6000
 ---
