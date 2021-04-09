@@ -13,7 +13,7 @@ def process_file(path, dirEntry):
             file = open(dirEntry, 'rb')
             files = {"image": file}
             start = time.time()
-            res = requests.post(url='http://rpi4gb', files=files)
+            res = requests.post(url='http://clustup', files=files)
             end = time.time()
             print("[{}] Object detection took {:.6f} seconds.".format(dirEntry.name, end - start))
 
@@ -51,8 +51,4 @@ with os.scandir(path) as entries:
         {executor.submit(process_file, path, dirEntry): dirEntry for dirEntry in entries}
 
     print("Finished analysing path: " + path)
-
-
-
-
-
+    
