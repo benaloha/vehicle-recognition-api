@@ -1,11 +1,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: carapi-rpi2gb-deployment
+  name: carapi-clusterup-deployment
   labels:
     app: carapi
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: carapi
@@ -14,7 +14,7 @@ spec:
       labels:
         app: carapi
     spec:
-      nodeName: rpi2gb
+      nodeName: clustup
       containers:
         - name: carapi
           image: localhost:32000/carapi
@@ -25,7 +25,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: carapi-rpi4gb-deployment
+  name: carapi-clustdown-deployment
   labels:
     app: carapi
 spec:
@@ -38,7 +38,7 @@ spec:
       labels:
         app: carapi
     spec:
-      nodeName: rpi4gb
+      nodeName: clustdown
       containers:
         - name: carapi
           image: localhost:32000/carapi
