@@ -25,11 +25,11 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: carapi-clustdown-deployment
+  name: carapi-clusterdown-deployment
   labels:
     app: carapi
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: carapi
